@@ -1,13 +1,27 @@
-import { View, Text } from "react-native";
 import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import HomeScreen from "./screens/HomeScreen";
+import MovieDetailScreen from "./screens/MovieDetailScreen";
+
+const Stack = createStackNavigator();
 
 const App = () => {
   return (
-    <View>
-      <Text className="text-green-300 flex item-center justify-center">
-        App
-      </Text>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="MovieDetail">
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="MovieDetail"
+          component={MovieDetailScreen}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
