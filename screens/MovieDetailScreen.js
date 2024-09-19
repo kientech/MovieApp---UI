@@ -7,26 +7,58 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ChevronLeftIcon, HeartIcon } from "react-native-heroicons/solid";
 import { LinearGradient } from "expo-linear-gradient";
 import TopCast from "../components/TopCast";
 import MoviesList from "../components/MoviesList";
+import axios from "axios"; // Import axios
+import { api } from "../api";
 
 const { width, height } = Dimensions.get("window");
 
 const MovieDetailScreen = () => {
   const navigation = useNavigation();
   const [isFavorited, setIsFavorited] = useState(false);
-  const similar = [
-    { id: 1, title: "Movie 1" },
-    { id: 2, title: "Movie 2" },
-    { id: 3, title: "Movie 3" },
-  ];
-
+  const [similarMovies, setSimilarMovies] = useState([]);
+  console.log("🚀 ~ MovieDetailScreen ~ similarMovies:", similarMovies);
   const route = useRoute();
   const { item } = route.params || {};
+
+  const {
+    title = "Unknown Title",
+    release_date = "Unknown Release Date",
+    vote_average = "5",
+    genres = [],
+    overview = "No description available.",
+    poster_path = "https://via.placeholder.com/150",
+    id,
+  } = item || {};
+
+  useEffect(() => {
+    if (id) {
+      // Replace with your actual API key and endpoint
+      const fetchSimilarMovies = async () => {
+        try {
+          const response = await axios.get(
+            `https://api.themoviedb.org/3/movie/${id}/similar`,
+            {
+              params: {
+                api_key: api,
+                language: "en-US",
+                page: 1,
+              },
+            }
+          );
+          setSimilarMovies(response.data.results);
+        } catch (error) {
+          console.error("Error fetching similar movies:", error);
+        }
+      };
+      fetchSimilarMovies();
+    }
+  }, [id]);
 
   return (
     <ScrollView className="flex-1 bg-neutral-900">
@@ -50,10 +82,11 @@ const MovieDetailScreen = () => {
             <HeartIcon color={isFavorited ? "red" : "white"} size={35} />
           </TouchableOpacity>
         </SafeAreaView>
+
         <View>
           <Image
             source={{
-              uri: "https://cdn.dribbble.com/userupload/12845014/file/original-b4aa4a169dd07d08c5ab232669066f02.png?resize=1504x1127",
+              uri: `https://image.tmdb.org/t/p/original${poster_path}`,
             }}
             style={{
               height: height * 0.55,
@@ -82,43 +115,32 @@ const MovieDetailScreen = () => {
         className="space-y-4"
       >
         <Text className="text-white text-center font-bold text-3xl tracking-wider">
-          Hello
+          {title}
         </Text>
         <Text className="text-white text-center text-md">
-          Released • 2020 • 170 mins{" "}
+          Released • {release_date.split("-")[0]} • {vote_average} / 10
         </Text>
 
         <View className="flex-row items-center justify-center gap-x-4 mt-2">
-          <View className="px-4 py-2 rounded-lg bg-gray-100">
-            <Text className="font-semibold text-md">Action</Text>
-          </View>
-
-          <View className="px-4 py-2 rounded-lg bg-gray-100">
-            <Text className="font-semibold text-md">Action</Text>
-          </View>
-
-          <View className="px-4 py-2 rounded-lg bg-gray-100">
-            <Text className="font-semibold text-md">Action</Text>
-          </View>
+          {genres.map((genre) => (
+            <View key={genre.id} className="px-4 py-2 rounded-lg bg-gray-100">
+              <Text className="font-semibold text-md">{genre.name}</Text>
+            </View>
+          ))}
         </View>
 
         <View className="mx-4">
           <Text className="text-gray-300 leading-relaxed text-justify">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates
-            placeat laboriosam unde! Soluta aperiam hic dolorem iure incidunt
-            maiores consequuntur nostrum sit illum eos obcaecati, doloribus
-            ipsam! Exercitationem, qui tenetur. Lorem ipsum dolor sit amet
-            consectetur adipisicing elit. Voluptates placeat laboriosam unde!
-            Soluta aperiam hic dolorem iure incidunt maiores consequuntur
-            nostrum sit illum eos obcaecati, doloribus ipsam! Exercitationem,
-            qui tenetur.
+            {overview}
           </Text>
         </View>
-        <View className="mt-12 mx-4 ">
+
+        <View className="mt-12 mx-4">
           <TopCast />
         </View>
-        <View>
-          <MoviesList data={similar} title="Similar" />
+
+        <View className="mx-4 mt-6">
+          <MoviesList data={similarMovies} title="Similar Movies" />
         </View>
       </View>
     </ScrollView>
