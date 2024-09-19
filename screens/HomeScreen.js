@@ -7,8 +7,10 @@ import {
   TextInput,
   ScrollView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
+import axios from "axios";
+import { api } from "../api";
 import {
   Bars3BottomLeftIcon,
   MagnifyingGlassIcon,
@@ -21,11 +23,53 @@ const ios = Platform.OS === "ios";
 const HomeScreen = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [trending, setTrending] = useState([
-    { id: 1, title: "Movie 1" },
-    { id: 2, title: "Movie 2" },
-    { id: 3, title: "Movie 3" },
-  ]);
+  const [trending, setTrending] = useState([]);
+  const [upcoming, setUpcoming] = useState([]);
+  const [topRated, setTopRated] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      setLoading(true);
+      try {
+        const [trendingResponse, upcomingResponse, topRatedResponse] =
+          await Promise.all([
+            axios.get(
+              `https://api.themoviedb.org/3/movie/popular?api_key=${api}`
+            ),
+            axios.get(
+              `https://api.themoviedb.org/3/movie/upcoming?api_key=${api}`
+            ),
+            axios.get(
+              `https://api.themoviedb.org/3/movie/top_rated?api_key=${api}`
+            ),
+          ]);
+
+        console.log(
+          "🚀 ~ fetchMovies ~ trendingResponse:",
+          trendingResponse.data.results
+        );
+        console.log(
+          "🚀 ~ fetchMovies ~ upcomingResponse:",
+          upcomingResponse.data.results
+        );
+        console.log(
+          "🚀 ~ fetchMovies ~ topRatedResponse:",
+          topRatedResponse.data.results
+        );
+
+        setTrending(trendingResponse.data.results);
+        setUpcoming(upcomingResponse.data.results);
+        setTopRated(topRatedResponse.data.results);
+      } catch (error) {
+        console.error("Error fetching movies:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovies();
+  }, []);
 
   return (
     <View className="flex-1 bg-neutral-800">
@@ -62,8 +106,8 @@ const HomeScreen = () => {
         contentContainerStyle={{ paddingBottom: 10 }}
       >
         <TrendingMovies data={trending} />
-        <MoviesList title={"Upcoming"} data={trending} />
-        <MoviesList title={"Top Rated"} data={trending} />
+        <MoviesList title={"Upcoming"} data={upcoming} />
+        <MoviesList title={"Top Rated"} data={topRated} />
       </ScrollView>
     </View>
   );

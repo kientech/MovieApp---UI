@@ -34,7 +34,7 @@ const MoviesList = ({ title, data }) => {
             <View className="space-y-2 mr-4">
               <Image
                 source={{
-                  uri: "https://cdn.dribbble.com/userupload/13118797/file/original-1e5547ee543e16d45adcf5a046148e57.png?resize=1504x1128",
+                  uri: `https://image.tmdb.org/t/p/original/${item.backdrop_path}`,
                 }}
                 style={{
                   height: screenHeight * 0.2,

@@ -11,12 +11,20 @@ import React, { useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ChevronLeftIcon, HeartIcon } from "react-native-heroicons/solid";
 import { LinearGradient } from "expo-linear-gradient";
+import TopCast from "../components/TopCast";
+import MoviesList from "../components/MoviesList";
 
 const { width, height } = Dimensions.get("window");
 
 const MovieDetailScreen = () => {
   const navigation = useNavigation();
   const [isFavorited, setIsFavorited] = useState(false);
+  const similar = [
+    { id: 1, title: "Movie 1" },
+    { id: 2, title: "Movie 2" },
+    { id: 3, title: "Movie 3" },
+  ];
+
   const route = useRoute();
   const { item } = route.params || {};
 
@@ -105,6 +113,12 @@ const MovieDetailScreen = () => {
             nostrum sit illum eos obcaecati, doloribus ipsam! Exercitationem,
             qui tenetur.
           </Text>
+        </View>
+        <View className="mt-12 mx-4 ">
+          <TopCast />
+        </View>
+        <View>
+          <MoviesList data={similar} title="Similar" />
         </View>
       </View>
     </ScrollView>

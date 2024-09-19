@@ -11,12 +11,12 @@ import { useNavigation } from "@react-navigation/native";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-const MovieCard = ({ item, handleClick }) => {
+const MovieCard = ({ item, handleClick, backdrop_path }) => {
   return (
     <TouchableWithoutFeedback onPress={() => handleClick(item)}>
       <Image
         source={{
-          uri: "https://cdn.dribbble.com/userupload/12845014/file/original-b4aa4a169dd07d08c5ab232669066f02.png?resize=1504x1127",
+          uri: `https://image.tmdb.org/t/p/original/${backdrop_path}`,
         }}
         style={{
           height: screenHeight * 0.4,
@@ -44,7 +44,11 @@ const TrendingMovies = ({ data }) => {
       <Carousel
         data={data}
         renderItem={({ item }) => (
-          <MovieCard item={item} handleClick={handleClick} />
+          <MovieCard
+            item={item}
+            handleClick={handleClick}
+            backdrop_path={item.backdrop_path}
+          />
         )}
         firstItem={1}
         inactiveSlideOpacity={0.5}
