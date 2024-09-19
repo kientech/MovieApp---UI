@@ -22,7 +22,7 @@ const MovieCard = ({ item, handleClick, backdrop_path }) => {
           height: screenHeight * 0.4,
           width: screenWidth * 0.7,
         }}
-        className="rounded-lg object-cover"
+        className="rounded-3xl object-cover"
       />
     </TouchableWithoutFeedback>
   );
